@@ -7,22 +7,74 @@ require "Window"
 
 local RepairAllPrice = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairAllPrice", false, {}, "Gemini:Hook-1.0")
 
+
 function RepairAllPrice:OnEnable()
 	self:Hook(Apollo.GetAddon("Vendor"), "SetBuyButtonText", self.UpdateTooltip)
+	
 end
 
 function RepairAllPrice:UpdateTooltip()	
-	local tooltip = ""
+	
+	-- Determine total repair cost
+	local monPrice = 0
 	if self.wndVendor:FindChild("VendorTab3"):IsChecked() then -- Repair tab is checked on vendor
 		if not self.wndVendor:FindChild("Buy"):GetData() then -- GetData is present on single, but not all, repairs
-			local total = 0
 			for _,v in pairs(self.tRepairableItems) do
-				total = total + v.itemData:GetRepairCost()
+				monPrice = monPrice + v.itemData:GetRepairCost()
 			end 
-			tooltip = total
 		end
 	end
+	
+	--
+	local buyButton = self.wndVendor:FindChild("Buy")
+	if monPrice == 0 then 
+		buyButton:SetTooltip("")
+	else
+		buyButton:SetTooltipForm(RepairAllPrice:ProduceTooltipWindow(monPrice))
+	end
+end
+
+
+function RepairAllPrice:ProduceTooltipWindow(monAmount)
+	local GeminiGUI = Apollo.GetPackage("Gemini:GUI-1.0").tPackage
+	-- Setup the table definition for the window
+	Print("1")
+	
+	local tWindowDefinition = {
+		Name					= "MyExampleWindow",
+		Template			= "CRB_TooltipSimple",
+		UseTemplateBG = true,
+		Picture			 = true,
+		Border				= true,		
+		AnchorCenter	= { 100, 40 },
+		Children = {{
+			Name = "AmountWindow",
+			WidgetType = "CashWindow",
+			AllowEditing = false,
+			SkipZeroes = true,			
+			AnchorFill = true,
+		}}
 		
-	self.wndVendor:FindChild("Buy"):SetTooltip(tooltip)
+	}
+	
+	
+
+	Print("2")
+	-- Create the GeminiGUI window prototype object
+	local tWindow = GeminiGUI:Create(tWindowDefinition)
+	
+	
+	Print("3")
+	-- Create the instance of the window
+	local wndInstance = tWindow:GetInstance()	
+	Print("4")
+	
+	local wnda = wndInstance:FindChild("MyExampleWindow")
+	local wndb = wnda:GetChildren()[0]
+	--wndb:SetAmount(monAmount)
+	wndInstance:ToFront()
+	wndInstance:Show(true, true)
+	return wndInstance
+	
 end
 
