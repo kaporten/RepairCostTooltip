@@ -37,9 +37,8 @@ end
 
 function RepairAllPrice:ProduceTooltipWindow(monAmount)
 	local GeminiGUI = Apollo.GetPackage("Gemini:GUI-1.0").tPackage
+
 	-- Setup the table definition for the window
-	Print("1")
-	
 	local tWindowDefinition = {
 		Name					= "MyExampleWindow",
 		Template			= "CRB_TooltipSimple",
@@ -47,31 +46,27 @@ function RepairAllPrice:ProduceTooltipWindow(monAmount)
 		Picture			 = true,
 		Border				= true,		
 		AnchorCenter	= { 100, 40 },
-		Children = {{
-			Name = "AmountWindow",
-			WidgetType = "CashWindow",
-			AllowEditing = false,
-			SkipZeroes = true,			
-			AnchorFill = true,
-		}}
-		
+		Children = {
+			{
+				Name = "AmountWindow",
+				WidgetType = "CashWindow",
+				AllowEditing = false,
+				SkipZeroes = true,			
+				AnchorFill = true,
+			},
+		}		
 	}
 	
-	
-
-	Print("2")
 	-- Create the GeminiGUI window prototype object
 	local tWindow = GeminiGUI:Create(tWindowDefinition)
-	
-	
-	Print("3")
+
 	-- Create the instance of the window
 	local wndInstance = tWindow:GetInstance()	
-	Print("4")
+
 	
-	local wnda = wndInstance:FindChild("MyExampleWindow")
-	local wndb = wnda:GetChildren()[0]
-	--wndb:SetAmount(monAmount)
+	local wnda = wndInstance:FindChild("AmountWindow")
+	--local wndb = wnda:GetChildren()[0]
+	wnda:SetAmount(monAmount)
 	wndInstance:ToFront()
 	wndInstance:Show(true, true)
 	return wndInstance
