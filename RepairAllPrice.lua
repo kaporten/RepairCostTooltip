@@ -4,86 +4,25 @@
 -----------------------------------------------------------------------------------------------
  
 require "Window"
- 
------------------------------------------------------------------------------------------------
--- RepairAllPrice Module Definition
------------------------------------------------------------------------------------------------
-local RepairAllPrice = {} 
- 
 
-function RepairAllPrice:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self 
-    return o
+local RepairAllPrice = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairAllPrice", false, {}, "Gemini:Hook-1.0")
+
+function RepairAllPrice:OnEnable()
+	self:Hook(Apollo.GetAddon("Vendor"), "SetBuyButtonText", self.UpdateTooltip)
 end
 
-function RepairAllPrice:Init()
-	local bHasConfigureFunction = false
-	local strConfigureButtonText = ""
-	local tDependencies = {
-		"Vendor",
-	}
-    Apollo.RegisterAddon(self, bHasConfigureFunction, strConfigureButtonText, tDependencies)
-end
- 
-
------------------------------------------------------------------------------------------------
--- RepairAllPrice OnLoad
------------------------------------------------------------------------------------------------
-function RepairAllPrice:OnLoad()
-    -- load our form file
-	self.xmlDoc = XmlDoc.CreateFromFile("RepairAllPrice.xml")
-	self.xmlDoc:RegisterCallback("OnDocLoaded", self)
-end
-
------------------------------------------------------------------------------------------------
--- RepairAllPrice OnDocLoaded
------------------------------------------------------------------------------------------------
-function RepairAllPrice:OnDocLoaded()
-
-	if self.xmlDoc ~= nil and self.xmlDoc:IsLoaded() then
-	    self.wndMain = Apollo.LoadForm(self.xmlDoc, "RepairAllPriceForm", nil, self)
-		if self.wndMain == nil then
-			Apollo.AddAddonErrorText(self, "Could not load the main window for some reason.")
-			return
+function RepairAllPrice:UpdateTooltip()	
+	local tooltip = ""
+	if self.wndVendor:FindChild("VendorTab3"):IsChecked() then -- Repair tab is checked on vendor
+		if not self.wndVendor:FindChild("Buy"):GetData() then -- GetData is present on single, but not all, repairs
+			local total = 0
+			for _,v in pairs(self.tRepairableItems) do
+				total = total + v.itemData:GetRepairCost()
+			end 
+			tooltip = total
 		end
-		
-	    self.wndMain:Show(false, true)
-
-		-- if the xmlDoc is no longer needed, you should set it to nil
-		-- self.xmlDoc = nil
-		
-		-- Register handlers for events, slash commands and timer, etc.
-		-- e.g. Apollo.RegisterEventHandler("KeyDown", "OnKeyDown", self)
-
-
-		-- Do additional Addon initialization here
 	end
+		
+	self.wndVendor:FindChild("Buy"):SetTooltip(tooltip)
 end
 
------------------------------------------------------------------------------------------------
--- RepairAllPrice Functions
------------------------------------------------------------------------------------------------
--- Define general functions here
-
-
------------------------------------------------------------------------------------------------
--- RepairAllPriceForm Functions
------------------------------------------------------------------------------------------------
--- when the OK button is clicked
-function RepairAllPrice:OnOK()
-	self.wndMain:Close() -- hide the window
-end
-
--- when the Cancel button is clicked
-function RepairAllPrice:OnCancel()
-	self.wndMain:Close() -- hide the window
-end
-
-
------------------------------------------------------------------------------------------------
--- RepairAllPrice Instance
------------------------------------------------------------------------------------------------
-local RepairAllPriceInst = RepairAllPrice:new()
-RepairAllPriceInst:Init()

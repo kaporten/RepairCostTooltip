@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Addon Author="Porten" APIVersion="8" Name="RepairAllPrice" Description="Displays the total cost for clicking Repair All as a tooltip on the Repair All button itself.">
+	<Script Name="Libs/GeminiAddon/GeminiAddon.lua"/>
     <Script Name="Libs/GeminiHook/GeminiHook-1.0.lua"/>
-	<Script Name="Libs/GeminiHook/GeminiAddon-1.0.lua"/>
 	<Script Name="RepairAllPrice.lua"/>
 </Addon>
