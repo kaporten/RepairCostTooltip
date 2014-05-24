@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------------
--- Client Lua Script for RepairAllPrice
--- Copyright (c) NCsoft. All rights reserved
+-- WildStar addon "RepairAllPrice" by Porten.
+-- Made primarily for playing a bit with the (awesome!) Gemini frameworks :)
 -----------------------------------------------------------------------------------------------
  
 require "Window"
 
 local RepairAllPrice = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairAllPrice", false, {}, "Gemini:Hook-1.0")
+RepairAllPrice.ADDON_VERSION = {1, 0, 0}
 
 function RepairAllPrice:OnEnable()
 	-- Hook into an appropriate Vendor method 
@@ -29,12 +30,12 @@ function RepairAllPrice:UpdateTooltip()
 		monAmount = monAmount + v.itemData:GetRepairCost()
 	end 
 
-	-- Produce tooltip window and set amount
+	-- Produce tooltip window and set amount.
 	local wndTooltip = RepairAllPrice.ProduceTooltipWindow()
 	wndTooltip:FindChild("Amount"):SetAmount(monAmount)
 		
 	-- Attach window as tooltip to "Repair All" button	
-	buyButton:SetTooltipForm(wndTooltip)	
+	buyButton:SetTooltipForm(wndTooltip)
 end
 
 
@@ -47,15 +48,23 @@ function RepairAllPrice:ProduceTooltipWindow()
 		Template		= "CRB_TooltipSimple",
 		UseTemplateBG	= true,
 		Picture			= true,
-		Border			= true,		
-		AnchorCenter	= {100, 40},
+		Border			= true,
+		AnchorCenter	= {210,40},
 		Children = {
+			{
+				Name 			= "Label",
+				WidgetType 		= "Window",
+				AnchorFill		= true,
+				Text			= Apollo.GetString("Tooltips_RepairFor"),
+				TextColor		= "gray"
+			},
 			{
 				Name 			= "Amount",
 				WidgetType 		= "CashWindow",
+				AnchorFill		= true,
 				AllowEditing	= false,
-				SkipZeroes 		= true,			
-				AnchorFill 		= true,
+				SkipZeroes 		= true,
+				TextColor		= "gray"
 			},
 		}		
 	}
@@ -66,4 +75,3 @@ function RepairAllPrice:ProduceTooltipWindow()
 	-- Create the instance of the window
 	return tWindow:GetInstance()	
 end
-
