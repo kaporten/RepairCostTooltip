@@ -1,19 +1,19 @@
 -----------------------------------------------------------------------------------------------
--- WildStar addon "RepairAllPrice" by Porten.
+-- WildStar addon "RepairCostTooltip" by Porten.
 -- Made primarily for playing a bit with the (awesome!) Gemini frameworks :)
 -----------------------------------------------------------------------------------------------
  
 require "Window"
 
-local RepairAllPrice = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairAllPrice", false, {}, "Gemini:Hook-1.0")
-RepairAllPrice.ADDON_VERSION = {1, 0, 0}
+local RepairCostTooltip = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairCostTooltip", false, {}, "Gemini:Hook-1.0")
+RepairCostTooltip.ADDON_VERSION = {1, 0, 0}
 
-function RepairAllPrice:OnEnable()
+function RepairCostTooltip:OnEnable()
 	-- Hook into an appropriate Vendor method 
 	self:Hook(Apollo.GetAddon("Vendor"), "SetBuyButtonText", self.UpdateTooltip)
 end
 
-function RepairAllPrice:UpdateTooltip()	
+function RepairCostTooltip:UpdateTooltip()	
 	-- Get ref to buy-button on Vendor (on self, since this is a hooked function)	
 	local buyButton = self.wndVendor:FindChild("Buy")
 	
@@ -31,7 +31,7 @@ function RepairAllPrice:UpdateTooltip()
 	end 
 
 	-- Produce tooltip window and set amount.
-	local wndTooltip = RepairAllPrice.ProduceTooltipWindow()
+	local wndTooltip = RepairCostTooltip.ProduceTooltipWindow()
 	wndTooltip:FindChild("Amount"):SetAmount(monAmount)
 		
 	-- Attach window as tooltip to "Repair All" button	
@@ -39,7 +39,7 @@ function RepairAllPrice:UpdateTooltip()
 end
 
 
-function RepairAllPrice:ProduceTooltipWindow()
+function RepairCostTooltip:ProduceTooltipWindow()
 	local GeminiGUI = Apollo.GetPackage("Gemini:GUI-1.0").tPackage
 
 	-- Setup the table definition for the window
