@@ -7,52 +7,55 @@ require "Window"
 
 local RepairAllPrice = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairAllPrice", false, {}, "Gemini:Hook-1.0")
 
-
 function RepairAllPrice:OnEnable()
+	-- Hook into an appropriate Vendor method 
 	self:Hook(Apollo.GetAddon("Vendor"), "SetBuyButtonText", self.UpdateTooltip)
-	
 end
 
 function RepairAllPrice:UpdateTooltip()	
+	-- Get ref to buy-button on Vendor (on self, since this is a hooked function)	
+	local buyButton = self.wndVendor:FindChild("Buy")
+	
+	-- If we're not updating to show a "Repair All" scenario, clear tooltip and return
+	if not self.wndVendor:FindChild("VendorTab3"):IsChecked()  	-- Repair tab must be checked on Vendor
+			or buyButton:GetData() then 						-- There must be item-select data associated with the buy/repair/repair-all btn
+		buyButton:SetTooltip("")
+		return
+	end	
 	
 	-- Determine total repair cost
-	local monPrice = 0
-	if self.wndVendor:FindChild("VendorTab3"):IsChecked() then -- Repair tab is checked on vendor
-		if not self.wndVendor:FindChild("Buy"):GetData() then -- GetData is present on single, but not all, repairs
-			for _,v in pairs(self.tRepairableItems) do
-				monPrice = monPrice + v.itemData:GetRepairCost()
-			end 
-		end
-	end
-	
-	--
-	local buyButton = self.wndVendor:FindChild("Buy")
-	if monPrice == 0 then 
-		buyButton:SetTooltip("")
-	else
-		buyButton:SetTooltipForm(RepairAllPrice:ProduceTooltipWindow(monPrice))
-	end
+	local monAmount = 0
+	for _,v in ipairs(self.tRepairableItems) do
+		monAmount = monAmount + v.itemData:GetRepairCost()
+	end 
+
+	-- Produce tooltip window and set amount
+	local wndTooltip = RepairAllPrice.ProduceTooltipWindow()
+	wndTooltip:FindChild("Amount"):SetAmount(monAmount)
+		
+	-- Attach window as tooltip to "Repair All" button	
+	buyButton:SetTooltipForm(wndTooltip)	
 end
 
 
-function RepairAllPrice:ProduceTooltipWindow(monAmount)
+function RepairAllPrice:ProduceTooltipWindow()
 	local GeminiGUI = Apollo.GetPackage("Gemini:GUI-1.0").tPackage
 
 	-- Setup the table definition for the window
 	local tWindowDefinition = {
-		Name					= "MyExampleWindow",
-		Template			= "CRB_TooltipSimple",
-		UseTemplateBG = true,
-		Picture			 = true,
-		Border				= true,		
-		AnchorCenter	= { 100, 40 },
+		Name			= "RepairAllTooltip",
+		Template		= "CRB_TooltipSimple",
+		UseTemplateBG	= true,
+		Picture			= true,
+		Border			= true,		
+		AnchorCenter	= {100, 40},
 		Children = {
 			{
-				Name = "AmountWindow",
-				WidgetType = "CashWindow",
-				AllowEditing = false,
-				SkipZeroes = true,			
-				AnchorFill = true,
+				Name 			= "Amount",
+				WidgetType 		= "CashWindow",
+				AllowEditing	= false,
+				SkipZeroes 		= true,			
+				AnchorFill 		= true,
 			},
 		}		
 	}
@@ -61,15 +64,6 @@ function RepairAllPrice:ProduceTooltipWindow(monAmount)
 	local tWindow = GeminiGUI:Create(tWindowDefinition)
 
 	-- Create the instance of the window
-	local wndInstance = tWindow:GetInstance()	
-
-	
-	local wnda = wndInstance:FindChild("AmountWindow")
-	--local wndb = wnda:GetChildren()[0]
-	wnda:SetAmount(monAmount)
-	wndInstance:ToFront()
-	wndInstance:Show(true, true)
-	return wndInstance
-	
+	return tWindow:GetInstance()	
 end
 
