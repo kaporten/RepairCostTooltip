@@ -6,7 +6,7 @@
 require "Window"
 
 local RepairCostTooltip = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairCostTooltip", false, {}, "Gemini:Hook-1.0")
-RepairCostTooltip.ADDON_VERSION = {1, 0, 0}
+RepairCostTooltip.ADDON_VERSION = {1, 0, 1}
 
 function RepairCostTooltip:OnEnable()
 	-- Hook into an appropriate Vendor method 
@@ -19,7 +19,7 @@ function RepairCostTooltip:UpdateTooltip()
 	
 	-- If we're not updating to show a "Repair All" scenario, clear tooltip and return
 	if not self.wndVendor:FindChild("VendorTab3"):IsChecked()  	-- Repair tab must be checked on Vendor
-			or buyButton:GetData() then 						-- There must be item-select data associated with the buy/repair/repair-all btn
+			or buyButton:GetData() then 						-- There must not be item-select data associated with the buy/repair/repair-all btn
 		buyButton:SetTooltip("")
 		return
 	end	
