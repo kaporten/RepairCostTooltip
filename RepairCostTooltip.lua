@@ -6,9 +6,22 @@
 require "Window"
 
 local RepairCostTooltip = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairCostTooltip", false, {"Vendor", "LilVendor"}, "Gemini:Hook-1.0")
-RepairCostTooltip.ADDON_VERSION = {2, 0, 0}
+RepairCostTooltip.ADDON_VERSION = {2, 1, 0}
 
 function RepairCostTooltip:OnEnable()
+	-- Extra check for which addon to use... *should* have been set in OnDependencyError, but apparently this won't always happen
+	if self.addonName == nil then
+		if Apollo.GetAddon("Vendor") ~= nil then
+			self.addonName = "Vendor"
+		elseif Apollo.GetAddon("LilVendor") ~= nil then
+			self.addonName = "LilVendor"
+		end	
+	end
+
+	if self.addonName == nil then
+		Apollo.AddAddonErrorText(self, "RepairCostTooltip requires either 'Vendor' or 'LilVendor' to be installed. Neither was found.")
+	end
+	
 	-- Hook into an appropriate Lil/Vendor method 
 	self:Hook(Apollo.GetAddon(self.addonName), "SetBuyButtonText", self.UpdateTooltip)
 end
