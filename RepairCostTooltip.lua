@@ -6,7 +6,7 @@
 require "Window"
 
 local RepairCostTooltip = Apollo.GetPackage("Gemini:Addon-1.0").tPackage:NewAddon("RepairCostTooltip", false, {"Vendor", "LilVendor"}, "Gemini:Hook-1.0")
-RepairCostTooltip.ADDON_VERSION = {2, 1, 0}
+RepairCostTooltip.ADDON_VERSION = {2, 2, 0}
 
 function RepairCostTooltip:OnEnable()
 	-- Extra check for which addon to use... *should* have been set in OnDependencyError, but apparently this won't always happen
