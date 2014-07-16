@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Addon Author="Porten" APIVersion="8" Name="RepairCostTooltip" Description="Displays the total repair cost as a tooltip, when hoovering over the Repair All vendor button.">
+<Addon Author="Porten" APIVersion="9" Name="RepairCostTooltip" Description="Displays the total repair cost as a tooltip, when hoovering over the Repair All vendor button.">
 	<Script Name="Libs/GeminiAddon/GeminiAddon.lua"/>
     <Script Name="Libs/GeminiHook/GeminiHook-1.0.lua"/>
 	<Script Name="Libs/GeminiGUI/GeminiGUI.lua"/>
